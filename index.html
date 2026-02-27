@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>NYC Architecture & Landscape Loop · 14 días</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:#f5f0e8;color:#1a1208;font-family:'DM Mono',monospace;min-height:100vh}
+  ::-webkit-scrollbar{width:5px}
+  ::-webkit-scrollbar-track{background:#ede8dc}
+  ::-webkit-scrollbar-thumb{background:#b8a890;border-radius:2px}
+  #root{min-height:100vh}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @keyframes pulse{0%,100%{opacity:0.4}50%{opacity:0.9}}
+  .card-in{animation:fadeIn 0.3s ease forwards}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+// ═══════════════════════════════════════════════════════════
+//  PALETTE  — warm parchment + ink + accent terracotta/sage
+// ═══════════════════════════════════════════════════════════
+const C = {
+  bg:      "#f5f0e8",
+  paper:   "#ede8dc",
+  ink:     "#1a1208",
+  ink2:    "#3a2e1e",
+  ink3:    "#6a5a42",
+  ink4:    "#9a8a72",
+  ink5:    "#c8b89a",
+  // line colours
+  nyc:     "#c0392b",
+  north:   "#b45309",
+  berk:    "#166534",
+  coast:   "#1e3a8a",
+  south:   "#7c3aed",
+  ret:     "#b45309",
+};
+
+// ═══════════════════════════════════════════════════════════
+//  STOPS  — canvas 680 × 860, north = top
+//  Geography approximation:
+//    NYC       ≈ (430, 620)
+//    Albany    ≈ (370, 400)
+//    Berkshires≈ (280, 340)
+//    Boston    ≈ (560, 300)
+//    Newport   ≈ (560, 460)
+//    New Haven ≈ (490, 530)
+//    Philly    ≈ (340, 680)
+//    Lancaster ≈ (230, 690)
+//    DC        ≈ (260, 790)
+//    Htd.Vly   ≈ (380, 510)
+// ═══════════════════════════════════════════════════════════
+const STOPS = [
+  {
+    id:0, days:"1–2", label:"NEW YORK CITY", short:"NYC",
+    x:430, y:620, color:C.nyc,
+    tag:"Arquitectura · Gastronomía",
+    arch:"Chrysler Building (Art Déco, 1930), Guggenheim (Wright, 1959), Flatiron, Brooklyn Bridge, Vessel (Heatherwick, 2019), Seagram Building (Mies van der Rohe).",
+    land:"Central Park, The High Line sobre vías elevadas, Brooklyn Bridge Park con vistas al skyline.",
+    food:"Bouley Bakery en Tribeca, Di Fara Pizza en Brooklyn, Katz's Deli (desde 1888), Grand Central Oyster Bar en la bóveda de cerámica de Guastavino.",
+    desc:"2 días en la ciudad más densa arquitectónicamente del mundo. Cada barrio es un manual de historia del diseño urbano."
+  },
+  {
+    id:1, days:"3", label:"HUDSON VALLEY", short:"HV",
+    x:390, y:510, color:C.north,
+    tag:"Arte en paisaje · Gastronomía farm-to-table",
+    arch:"Dia Beacon: turbina industrial de 1929 convertida en museo de arte por Robert Irwin. Vanderbilt Mansion NHS (Beaux-Arts, 1898).",
+    land:"Storm King Art Center: 500 acres de esculturas monumentales entre colinas del Hudson. Catskill Mountains al fondo.",
+    food:"The Artist's Palate en Poughkeepsie (ingredientes de granjas locales), Gunk Haus (cerveza artesanal alemana con vistas al Shawangunk Ridge).",
+    desc:"El Valle del Hudson fue la cuna del movimiento paisajista americano (Hudson River School). Las esculturas de Storm King son imprescindibles."
+  },
+  {
+    id:2, days:"4", label:"ALBANY", short:"ALB",
+    x:370, y:390, color:C.north,
+    tag:"Arquitectura de poder · Brutalismo",
+    arch:"New York State Capitol (Richardson, 1899): la escalera 'Million Dollar Staircase' es única en EE.UU. Empire State Plaza: conjunto brutalista de Rockefeller, 1976, con el Egg (teatro elipsoidal) y la esplanada sobre un lago artificial.",
+    land:"Hudson River a sus pies, Helderberg Escarpment al sur, colinas onduladas de upstate NY.",
+    food:"DZ Restaurants (grupo local emblemático), Lucas Confectionery en Troy (apenas 20 min): wine bar victoriano con cocina de temporada.",
+    desc:"Albany tiene el contraste arquitectónico más dramático del noreste: el Capitol victoriano de piedra frente al brutalismo blanco de Nelson Rockefeller."
+  },
+  {
+    id:3, days:"5", label:"BERKSHIRES", short:"BRK",
+    x:268, y:318, color:C.berk,
+    tag:"Paisaje · Arte · Arquitectura doméstica",
+    arch:"The Mount (Edith Wharton, 1902): Wharton diseñó su propia casa siguiendo los principios que publicó en 'The Decoration of Houses'. MASS MoCA: 26 edificios fabriles del s.XIX reconvertidos en el mayor museo de arte contemporáneo de EE.UU.",
+    land:"Hoosac Range, Monument Mountain, Bash Bish Falls. Otoño o primavera: paisaje de postal de Nueva Inglaterra.",
+    food:"Mezze Bistro & Bar (Williamstown): cocina hiperlocal con vistas a los Berkshires. Nudel en Lenox: pequeño restaurante con pasta fresca artesanal.",
+    desc:"Los Berkshires son el destino cultural más sofisticado del Massachusetts rural: Tanglewood, museos de primer nivel y una arquitectura doméstica excepcional."
+  },
+  {
+    id:4, days:"6", label:"NORTHAMPTON / PIONEER VALLEY", short:"NOR",
+    x:318, y:268, color:C.berk,
+    tag:"Paisaje de río · Campus universitario",
+    arch:"Smith College Campus (múltiples épocas): el museo de arte tiene obras de Degas, Cézanne y Winslow Homer. Calvin Coolidge Memorial Bridge (1939) sobre el Connecticut River.",
+    land:"Connecticut River Valley: el 'valle de los dinosaurios' tiene paisajes agrícolas idílicos. Mounts Holyoke y Tom ofrecen panorámicas históricas (Thomas Cole las pintó).",
+    food:"Northampton tiene la mejor escena foodie de Massachusetts rural. Contente (tapas de autor), Spoleto (pasta italiana artesanal), mercado de agricultores de sábado.",
+    desc:"El Pioneer Valley conecta cinco colleges universitarios en un paisaje de río que los pintores del s.XIX inmortalizaron. Hoy es una burbuja cultural y gastronómica."
+  },
+  {
+    id:5, days:"7", label:"BOSTON", short:"BOS",
+    x:558, y:295, color:C.coast,
+    tag:"Arquitectura del s.XIX · Gastronomía de mar",
+    arch:"Copley Square: Trinity Church (Richardson, 1877) y Boston Public Library (McKim Mead & White, 1895) frente a frente — el choque más bello de estilos del noreste. Quincy Market (Bullfinch, 1826). Fenway Park (1912).",
+    land:"Boston Common y Public Garden (los parques urbanos más antiguos de EE.UU.), Emerald Necklace diseñado por Olmsted, el puerto histórico.",
+    food:"Union Oyster House (1826, el restaurante más antiguo de EE.UU.): ostras del Atlántico bajo la bóveda original. Toro: cocina española de autor de Ken Oringer. Neptune Oyster en North End: la mejor langosta roll.",
+    desc:"Boston concentra más arquitectura histórica por metro cuadrado que cualquier ciudad americana. La Freedom Trail es un paseo arquitectónico tanto como histórico."
+  },
+  {
+    id:6, days:"8", label:"NEWPORT", short:"NPT",
+    x:558, y:462, color:C.coast,
+    tag:"Gilded Age · Paisaje costero",
+    arch:"The Breakers (Cornelius Vanderbilt II, 1895): 70 habitaciones de mármol italiano y piedra de Caen. Marble House (1892), Rosecliff (1902). Todas diseñadas por McKim, Mead & White o Richard Morris Hunt. El estilo Châteauesque americano en su máxima expresión.",
+    land:"Cliff Walk: 5 km entre las mansiones del acantilado y el Atlántico abierto. Hammersmith Farm, Ocean Drive, Bailey's Beach.",
+    food:"The Mooring (en el puerto, langosta y mariscos con vista a los veleros), Clarke Cooke House (edificio colonial de 1700, cocina contemporánea de lujo).",
+    desc:"Las mansiones de Newport son las construcciones privadas más ambiciosas jamás levantadas en suelo americano. Los ricos del Gilded Age competían en escala y ornamentación."
+  },
+  {
+    id:7, days:"9", label:"NEW HAVEN", short:"NHV",
+    x:482, y:532, color:C.coast,
+    tag:"Gothic Revival · Modernismo · Pizza legendaria",
+    arch:"Yale University: Harkness Tower (gótico colegial, 1921), Beinecke Rare Book Library (Gordon Bunshaft, 1963: fachada de mármol traslúcido que filtra la luz), Ingalls Rink (Eero Saarinen, 1958: estructura de hormigón en forma de ballena). Tres siglos de estilos en un solo campus.",
+    land:"East Rock Park: basalto trapeano que domina la ciudad. Long Island Sound a 15 minutos.",
+    food:"Frank Pepe Pizzeria (1925): la apizza New Haven-style —masa carbonizada, mozzarella de búfala, almejas blancas— es reconocida como la mejor pizza de EE.UU. por múltiples medios especializados.",
+    desc:"New Haven tiene el campus universitario arquitectónicamente más diverso de América, desde gótico victoriano hasta brutalismo y expresionismo estructural."
+  },
+  {
+    id:8, days:"10", label:"PHILADELPHIA", short:"PHL",
+    x:340, y:672, color:C.south,
+    tag:"Arquitectura colonial e industrial · Gastronomía de mercado",
+    arch:"Independence Hall (1753): donde se firmó la Constitución. Eastern State Penitentiary (1829): panóptico neogótico que influyó en el diseño carcelario mundial. Philadelphia Museum of Art (neoclásico, 1928). PSFS Building (1932): primer rascacielos International Style de EE.UU.",
+    land:"Fairmount Park: uno de los parques urbanos más grandes de EE.UU., con el Schuylkill River. Wissahickon Gorge: bosque antiguo dentro de la ciudad.",
+    food:"Reading Terminal Market (mercado cubierto de 1892): DiNic's roast pork sandwich elegido 'mejor sandwich de EE.UU.' por Adam Richman. Zahav (Michael Solomonov): cocina israelí de autor, mejor restaurante de Philly según múltiples rankings. Zahav tiene lista de espera — reserva con semanas de antelación.",
+    desc:"Philly tiene el tejido urbano histórico más completo de EE.UU.: callejuelas coloniales del s.XVIII conviven con arquitectura industrial del s.XIX y modernismo del XX."
+  },
+  {
+    id:9, days:"11", label:"LANCASTER COUNTY", short:"LAN",
+    x:218, y:688, color:C.south,
+    tag:"Paisaje agrario · Arquitectura vernácula",
+    arch:"Amish barns y granjas del s.XVIII: la arquitectura funcional más auténtica de América del Norte. Ephrata Cloister (1740): arquitectura colonial religiosa alemana única. Lancaster Central Market (1889): la cubierta de ladrillo victoriano más antigua de EE.UU. en uso continuo.",
+    land:"Quilt-landscape: campos de cultivo geométricos sin electricidad, carros tirados por caballos, silos de piedra. Los paisajes ondulados del Pennsylvania Dutch Country son únicos en el mundo desarrollado.",
+    food:"Dienner's Country Restaurant (cocina Amish: pot pie, whoopie pies, shoo-fly pie). Bird-in-Hand Farmers Market: quesos artesanales, panes de masa madre, embutidos curados en casa.",
+    desc:"Lancaster County es un viaje en el tiempo: los Amish mantienen un paisaje agrario del s.XVIII intacto. La arquitectura vernácula de las granjas es extraordinaria."
+  },
+  {
+    id:10, days:"12", label:"WASHINGTON D.C.", short:"D.C.",
+    x:258, y:788, color:C.south,
+    tag:"Arquitectura neoclásica · Paisaje monumental",
+    arch:"Capitolio (Thornton/Latrobe/Bulfinch, 1800–1868), Biblioteca del Congreso — Jefferson Building (1897): el interior más ornamentado de América. East Building de la National Gallery (I.M. Pei, 1978): brutalismo geométrico de precisión. Union Station (Burnham, 1908): el Beaux-Arts más espectacular del país.",
+    land:"National Mall: 3 km de eje monumental entre el Capitolio y el Lincoln Memorial. Roosevelt Island, Rock Creek Park (2.100 acres de bosque dentro de D.C.).",
+    food:"José Andrés tiene en D.C. su mayor concentración de restaurantes: Minibar (2 estrellas Michelin, cocina de vanguardia), Zaytinya (mezze mediterráneo), Jaleo (tapas españolas). Estadio: cocina de mercado junto al Nationals Park.",
+    desc:"D.C. fue la primera ciudad planificada de EE.UU. (L'Enfant, 1791). El contraste entre el neoclásico del Mall y la arquitectura contemporánea de los museos es extraordinario."
+  },
+  {
+    id:11, days:"13", label:"DELAWARE WATER GAP", short:"DWG",
+    x:368, y:598, color:C.ret,
+    tag:"Paisaje natural · Arquitectura vernácula de río",
+    arch:"Dingmans Ferry Covered Bridge (1900): uno de los puentes cubiertos más largos del noreste. Millbrook Village: aldea del s.XIX restaurada dentro del parque nacional. Walpack Center: pueblo abandonado en el valle del Delaware.",
+    land:"Delaware Water Gap NRA: el río Delaware corta las Kittatinny Mountains creando un cañón de 400 m de desnivel. Dingmans Falls, Silverthread Falls. El Appalachian Trail cruza el Gap.",
+    food:"Ruta de regreso por la Rt. 46 y la I-80: stops en Vernon (NJ) con quesos locales y en el mercado de Blairstown. Cena de penúltima noche en un farm-to-table de Milford, PA.",
+    desc:"El Water Gap es el contraste perfecto tras los días de ciudad: naturaleza sin domesticar, un río histórico y cascadas en un parque sin masificación turística."
+  },
+  {
+    id:12, days:"14", label:"NEW YORK CITY", short:"NYC",
+    x:430, y:620, color:C.nyc,
+    tag:"Cierre arquitectónico · Cena de celebración",
+    arch:"Paseo de despedida: el arco del Washington Square Park (McKim, 1892), el Dakota Building (1884), el San Remo (Art Déco, 1930). Recorrido por el Lower East Side y sus edificios de inmigración. Una última vez en el puente de Brooklyn al atardecer.",
+    land:"Hudson River Greenway al atardecer, el paseo de Battery Park con la bahía, el recién ampliado Little Island (Heatherwick, 2021).",
+    food:"Cena de celebración: Le Bernardin (Eric Ripert, 3 estrellas Michelin, el mejor restaurante de pescado de EE.UU.) o Gramercy Tavern (Tom Colicchio, American brasserie de referencia desde 1994).",
+    desc:"Regreso a casa con la mirada entrenada: la ciudad que ya conoces se ve completamente distinta después de 12 días de arquitectura, paisajes y gastronomía del noreste."
+  },
+];
+
+// ═══════════════════════════════════════════════════════════
+//  ROUTE SEGMENTS  — only H, V, 45° lines
+// ═══════════════════════════════════════════════════════════
+const SEGS = [
+  // NYC → Hudson Valley: left then up
+  { color:C.north, w:4.5, pts:[[430,620],[390,620],[390,510]] },
+  // HV → Albany: straight up
+  { color:C.north, w:4.5, pts:[[390,510],[390,390]] },
+  // Albany → Berkshires: left then up-left diagonal
+  { color:C.berk,  w:4.5, pts:[[370,390],[268,390],[268,318]] },
+  // Berkshires → Northampton: up
+  { color:C.berk,  w:4.5, pts:[[268,318],[268,268],[318,268]] },
+  // Northampton → Boston: right then diagonal
+  { color:C.coast, w:4.5, pts:[[318,268],[318,295],[558,295]] },
+  // Boston → Newport: down
+  { color:C.coast, w:4.5, pts:[[558,295],[558,462]] },
+  // Newport → New Haven: left then down
+  { color:C.coast, w:4.5, pts:[[558,462],[482,462],[482,532]] },
+  // New Haven → Philadelphia: down then left
+  { color:C.south, w:4.5, pts:[[482,532],[482,620],[340,620],[340,672]] },
+  // Philly → Lancaster: left
+  { color:C.south, w:4.5, pts:[[340,672],[218,672],[218,688]] },
+  // Lancaster → DC: down then right
+  { color:C.south, w:4.5, pts:[[218,688],[218,788],[258,788]] },
+  // DC → Delaware Water Gap: up then right
+  { color:C.ret,   w:4.5, pts:[[258,788],[258,598],[368,598]] },
+  // DWG → NYC: right then down
+  { color:C.nyc,   w:4.5, pts:[[368,598],[430,598],[430,620]] },
+];
+
+// ═══════════════════════════════════════════════════════════
+//  GEO OUTLINES
+// ═══════════════════════════════════════════════════════════
+const NY_STATE = [
+  [120,195],[160,198],[200,202],[240,200],[290,198],[340,194],
+  [370,186],[410,178],[455,168],[498,158],[530,148],[556,132],
+  [572,148],[586,178],[590,218],[590,260],[572,278],[546,268],
+  [522,282],[510,308],[494,332],[478,352],[460,374],[452,402],
+  [448,438],[444,478],[442,516],[438,558],[432,598],[430,620],
+  // south & west
+  [408,638],[386,648],[360,638],[334,618],[306,598],[278,570],
+  [252,542],[222,514],[194,490],[164,470],[138,448],[118,414],
+  [112,374],[114,334],[118,294],[122,252],[118,210],[120,195]
+];
+const MA_STATE = [
+  [268,318],[318,268],[358,260],[400,254],[440,248],[480,244],
+  [520,244],[552,246],[576,250],[594,248],[610,252],[622,260],
+  [628,274],[620,286],[604,292],[584,298],[568,295],[558,300],
+  [540,312],[524,330],[508,350],[492,374],[480,400],[468,424],
+  [456,444],[444,458],[436,462],[426,456],[420,442],[428,420],
+  [440,400],[450,378],[456,356],[454,334],[446,316],[430,306],
+  [408,300],[386,298],[362,300],[338,306],[314,312],[288,316],[268,318]
+];
+// Cape Cod peninsula
+const CAPE_COD = [
+  [568,295],[576,310],[588,336],[598,364],[608,394],[614,420],
+  [618,442],[622,458],[618,468],[608,462],[596,448],[580,426],
+  [566,400],[558,374],[554,348],[554,318],[558,300],[568,295]
+];
+const CT_STATE = [
+  [440,532],[462,524],[482,518],[506,514],[528,512],[550,514],
+  [558,520],[558,462],[540,458],[516,454],[490,452],[466,454],
+  [444,458],[440,466],[438,490],[438,510],[440,532]
+];
+const RI_STATE = [
+  [544,454],[558,448],[572,450],[578,462],[574,480],[562,490],
+  [548,492],[538,482],[538,466],[544,454]
+];
+const PA_STATE = [
+  [118,534],[150,532],[200,530],[250,530],[290,528],[330,526],
+  [370,524],[410,522],[440,520],[460,526],[470,548],[474,578],
+  [476,608],[474,638],[470,668],[462,696],[448,722],[432,742],
+  // south border roughly
+  [400,750],[360,752],[320,752],[280,750],[240,750],[200,748],
+  [160,746],[130,744],[116,740],
+  // west side
+  [114,700],[112,660],[112,620],[114,578],[116,540],[118,534]
+];
+const DC_BOX = [[246,778],[274,778],[274,800],[246,800]];
+
+const HUDSON_R = [[442,172],[440,210],[438,250],[436,290],[434,330],[432,370],[432,410],[432,460],[432,510],[432,560],[432,598]];
+const CT_R     = [[492,252],[492,290],[492,330],[492,370],[492,410],[492,452]];
+const DEL_R    = [[370,524],[368,560],[366,598],[364,632],[360,668],[356,700],[350,732],[344,760],[338,790]];
+const CHES_BAY = [[290,790],[286,760],[282,730],[276,700],[270,670],[264,640],[260,610],[258,580],[256,550]];
+
+const polyStr = pts => pts.map(p => p.join(",")).join(" ");
+const segPath = pts => pts.map((p,i) => (i===0?`M${p[0]},${p[1]}`:`L${p[0]},${p[1]}`)).join(" ");
+
+// ═══════════════════════════════════════════════════════════
+//  LABEL CONFIG — manually placed to avoid all overlaps
+// ═══════════════════════════════════════════════════════════
+const LABEL = {
+  0:  { dx:14,  dy:-18, anchor:"start"  },  // NYC: top-right
+  1:  { dx:-14, dy:0,   anchor:"end"    },  // Hudson Valley: left
+  2:  { dx:-14, dy:0,   anchor:"end"    },  // Albany: left
+  3:  { dx:-14, dy:0,   anchor:"end"    },  // Berkshires: left
+  4:  { dx:-14, dy:0,   anchor:"end"    },  // Northampton: left
+  5:  { dx:14,  dy:-18, anchor:"start"  },  // Boston: top-right
+  6:  { dx:14,  dy:0,   anchor:"start"  },  // Newport: right
+  7:  { dx:14,  dy:16,  anchor:"start"  },  // New Haven: bottom-right
+  8:  { dx:-14, dy:0,   anchor:"end"    },  // Philadelphia: left
+  9:  { dx:-14, dy:0,   anchor:"end"    },  // Lancaster: left
+  10: { dx:-14, dy:0,   anchor:"end"    },  // DC: left
+  11: { dx:14,  dy:-18, anchor:"start"  },  // DWG: top-right
+};
+
+// Line legend
+const LEGEND = [
+  [C.nyc,   "NYC (Inicio · Regreso)"],
+  [C.north,  "NYC → Albany (Hudson Valley)"],
+  [C.berk,   "Albany → Boston (Berkshires)"],
+  [C.coast,  "Boston → New Haven (Costa)"],
+  [C.south,  "New Haven → D.C. (Interior)"],
+  [C.ret,    "D.C. → NYC (Regreso)"],
+];
+
+// ═══════════════════════════════════════════════════════════
+//  APP
+// ═══════════════════════════════════════════════════════════
+function App() {
+  const [sel, setSel] = React.useState(null);
+  const [tab, setTab] = React.useState("arch"); // arch | land | food
+  const stop = sel !== null ? STOPS[sel] : null;
+
+  const TAB_META = [
+    { key:"arch", label:"🏛  ARQUITECTURA" },
+    { key:"land", label:"🌿  PAISAJE"       },
+    { key:"food", label:"🍽  GASTRONOMÍA"   },
+  ];
+
+  return (
+    <div style={{
+      background:C.bg, minHeight:"100vh",
+      padding:"20px 14px",
+      display:"flex", flexDirection:"column", alignItems:"center",
+      fontFamily:"'DM Mono', monospace",
+    }}>
+
+      {/* ── HEADER ── */}
+      <div style={{textAlign:"center", marginBottom:"20px"}}>
+        <div style={{fontSize:"0.58rem", letterSpacing:"0.4em", color:C.ink4,
+          textTransform:"uppercase", marginBottom:"4px"}}>
+          New York · Massachusetts · Connecticut · Pennsylvania · D.C.
+        </div>
+        <h1 style={{
+          fontFamily:"'DM Serif Display', serif",
+          fontSize:"2rem", fontWeight:400, color:C.ink,
+          lineHeight:1.1, margin:0, letterSpacing:"0.02em"
+        }}>
+          Architecture &amp; Landscape Loop
+        </h1>
+        <div style={{fontSize:"0.62rem", letterSpacing:"0.25em", color:C.ink5,
+          marginTop:"5px", textTransform:"uppercase"}}>
+          14 días · NYC → NYC · Arquitectura · Paisaje · Gastronomía
+        </div>
+      </div>
+
+      <div style={{display:"flex", gap:"18px", maxWidth:"1120px", width:"100%",
+        flexWrap:"wrap", justifyContent:"center", alignItems:"flex-start"}}>
+
+        {/* ══════════════════════════════════
+            MAP
+        ══════════════════════════════════ */}
+        <div style={{
+          background:C.paper, border:`1px solid ${C.ink5}`,
+          flexShrink:0, position:"relative",
+          boxShadow:"4px 4px 0 #c8b89a",
+        }}>
+          <svg width="680" height="860" viewBox="0 0 680 860" style={{display:"block"}}>
+            <defs>
+              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M40 0L0 0 0 40" fill="none" stroke="#ddd8cc" strokeWidth="0.5"/>
+              </pattern>
+              <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+                <feGaussianBlur stdDeviation="3.5" result="b"/>
+                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+
+            <rect width="680" height="860" fill={C.paper}/>
+            <rect width="680" height="860" fill="url(#grid)"/>
+
+            {/* Ocean tint */}
+            <rect x="550" y="130" width="130" height="410" fill="#dde8f0" opacity="0.55"/>
+            <text x="656" y="380" fontSize="7.5" fill="#b8c8d8" textAnchor="middle"
+              transform="rotate(90,656,380)" letterSpacing="3"
+              style={{userSelect:"none"}}>ATLANTIC OCEAN</text>
+
+            {/* ── STATE FILLS ── */}
+            <polygon points={polyStr(NY_STATE)} fill="#e8e2d6" stroke={C.ink5} strokeWidth="1"/>
+            <polygon points={polyStr(MA_STATE)} fill="#e2dcd4" stroke={C.ink5} strokeWidth="1"/>
+            <polygon points={polyStr(CAPE_COD)} fill="#e2dcd4" stroke={C.ink5} strokeWidth="1"/>
+            <polygon points={polyStr(CT_STATE)} fill="#e4ded6" stroke={C.ink5} strokeWidth="1"/>
+            <polygon points={polyStr(RI_STATE)} fill="#e2dcd4" stroke={C.ink5} strokeWidth="1"/>
+            <polygon points={polyStr(PA_STATE)} fill="#e6e0d8" stroke={C.ink5} strokeWidth="1"/>
+            <polygon points={polyStr(DC_BOX)}   fill="#d8e8d4" stroke="#888" strokeWidth="1"/>
+
+            {/* ── RIVERS ── */}
+            <polyline points={polyStr(HUDSON_R)} fill="none" stroke="#b8ccd8" strokeWidth="1.4" opacity="0.8"/>
+            <text x="450" y="390" fontSize="6.5" fill="#b8ccd8" letterSpacing="1"
+              transform="rotate(-88,450,390)" style={{userSelect:"none"}}>HUDSON</text>
+            <polyline points={polyStr(CT_R)} fill="none" stroke="#b8ccd8" strokeWidth="1" opacity="0.7"/>
+            <polyline points={polyStr(DEL_R)} fill="none" stroke="#b8ccd8" strokeWidth="1.2" opacity="0.7"/>
+            <text x="348" y="648" fontSize="6.5" fill="#b8ccd8" letterSpacing="1"
+              transform="rotate(-88,348,648)" style={{userSelect:"none"}}>DELAWARE</text>
+            <polyline points={polyStr(CHES_BAY)} fill="none" stroke="#b8ccd8" strokeWidth="1.4" opacity="0.6"/>
+            <text x="248" y="668" fontSize="6.5" fill="#b8ccd8" letterSpacing="1"
+              transform="rotate(-88,248,668)" style={{userSelect:"none"}}>CHESAPEAKE</text>
+
+            {/* ── STATE LABELS ── */}
+            {[
+              [208, 420, "NEW YORK"],
+              [470, 272, "MASSACHUSETTS"],
+              [480, 498, "CONNECTICUT"],
+              [288, 630, "PENNSYLVANIA"],
+              [576, 500, "RHODE IS."],
+            ].map(([x,y,n]) => (
+              <text key={n} x={x} y={y} fontSize="7.5" fill={C.ink5} textAnchor="middle"
+                letterSpacing="1.8" fontWeight="500"
+                style={{userSelect:"none", fontFamily:"'DM Mono',monospace"}}>{n}</text>
+            ))}
+            <text x="260" y="796" fontSize="6.5" fill="#6a9a6a" textAnchor="middle"
+              letterSpacing="1.5" style={{userSelect:"none"}}>D.C.</text>
+
+            {/* ── ROUTE LINES ── */}
+            {SEGS.map((s,i) => (
+              <path key={i} d={segPath(s.pts)} fill="none"
+                stroke={s.color} strokeWidth={s.w} strokeLinecap="square" opacity="0.85"/>
+            ))}
+
+            {/* ── STOPS ── */}
+            {STOPS.map((s, i) => {
+              if (i === 12) return null; // skip duplicate NYC return dot
+              const isSel = sel === i;
+              const isHub = i === 0; // NYC bigger
+              const r = isHub ? 11 : 8;
+              const lp = LABEL[i] || {dx:14,dy:0,anchor:"start"};
+              const lx = s.x + lp.dx;
+              const ly = s.y + lp.dy;
+
+              return (
+                <g key={i} onClick={() => setSel(sel===i ? null : i)}
+                  style={{cursor:"pointer"}}>
+
+                  {isSel && (
+                    <circle cx={s.x} cy={s.y} r={r+14}
+                      fill={s.color} opacity="0.15" filter="url(#glow)"/>
+                  )}
+
+                  {/* Station diamond (metro-style square rotated 45°) */}
+                  <rect x={s.x-r} y={s.y-r} width={r*2} height={r*2}
+                    rx="1"
+                    fill={isSel ? s.color : C.paper}
+                    stroke={s.color} strokeWidth={isSel ? 2.5 : 2}
+                    filter={isSel ? "url(#glow)" : ""}
+                  />
+                  <rect x={s.x-(r*0.4)} y={s.y-(r*0.4)}
+                    width={r*0.8} height={r*0.8}
+                    fill={isSel ? "#fff" : s.color} rx="0.5"
+                  />
+
+                  {/* Tick line */}
+                  <line x1={s.x} y1={s.y}
+                    x2={lp.anchor==="start" ? s.x+10 : s.x-10} y2={s.y}
+                    stroke={s.color} strokeWidth="1.5" opacity="0.5"/>
+
+                  {/* Labels */}
+                  <text x={lx} y={ly-3}
+                    textAnchor={lp.anchor} fontSize="9.5" fontWeight="500"
+                    fill={isSel ? s.color : C.ink2}
+                    letterSpacing="0.08em"
+                    style={{userSelect:"none", fontFamily:"'DM Mono',monospace"}}>
+                    {s.label}
+                  </text>
+                  <text x={lx} y={ly+10}
+                    textAnchor={lp.anchor} fontSize="7.5"
+                    fill={isSel ? s.color+"aa" : C.ink4}
+                    letterSpacing="0.04em"
+                    style={{userSelect:"none", fontFamily:"'DM Mono',monospace"}}>
+                    día {s.days} · {s.short}
+                  </text>
+                </g>
+              );
+            })}
+
+            {/* ── LEGEND ── */}
+            <rect x="10" y="748" width="232" height="104" rx="2"
+              fill={C.bg} stroke={C.ink5} strokeWidth="1"/>
+            <text x="20" y="765" fontSize="7.5" fill={C.ink3}
+              letterSpacing="2" fontWeight="500"
+              style={{fontFamily:"'DM Mono',monospace"}}>LÍNEAS DE RUTA</text>
+            {LEGEND.map(([col,name],i) => (
+              <g key={i}>
+                <line x1="18" y1={776+i*14} x2="44" y2={776+i*14}
+                  stroke={col} strokeWidth="4" strokeLinecap="square"/>
+                <circle cx="31" cy={776+i*14} r="3"
+                  fill={C.bg} stroke={col} strokeWidth="1.5"/>
+                <text x="50" y={780+i*14} fontSize="7.5" fill={C.ink4}
+                  style={{fontFamily:"'DM Mono',monospace"}}>{name}</text>
+              </g>
+            ))}
+
+            {/* Compass */}
+            <g transform="translate(640,44)">
+              <text x="0" y="-14" textAnchor="middle" fontSize="9"
+                fill={C.ink4} fontWeight="500">N</text>
+              <line x1="0" y1="-10" x2="0" y2="10" stroke={C.ink4} strokeWidth="1.5"/>
+              <line x1="-10" y1="0" x2="10" y2="0" stroke={C.ink4} strokeWidth="1.5"/>
+              <polygon points="0,-10 -2.5,-3 0,-6 2.5,-3" fill={C.ink4}/>
+            </g>
+
+            <text x="670" y="852" textAnchor="end" fontSize="6" fill={C.ink5}
+              letterSpacing="1.5" style={{fontFamily:"'DM Mono',monospace"}}>
+              ARCHITECTURE &amp; LANDSCAPE LOOP · 14 DÍAS
+            </text>
+          </svg>
+        </div>
+
+        {/* ══════════════════════════════════
+            PANEL
+        ══════════════════════════════════ */}
+        <div style={{flex:"1", minWidth:"272px", maxWidth:"348px"}}>
+
+          {/* Info card */}
+          <div className={stop ? "card-in" : ""} style={{
+            background: stop ? "#fff" : C.paper,
+            border:`1px solid ${stop ? stop.color+"88" : C.ink5}`,
+            padding:"18px", marginBottom:"12px",
+            minHeight:"260px",
+            boxShadow: stop ? `3px 3px 0 ${stop.color}44` : `2px 2px 0 ${C.ink5}`,
+            transition:"border-color 0.3s, box-shadow 0.3s",
+          }}>
+            {!stop ? (
+              <div style={{color:C.ink5, fontSize:"0.82rem", lineHeight:2,
+                textAlign:"center", paddingTop:"48px",
+                fontFamily:"'DM Serif Display',serif", fontStyle:"italic"}}>
+                <div style={{fontSize:"2rem", marginBottom:"10px"}}>◈</div>
+                Selecciona una parada<br/>del mapa.
+              </div>
+            ) : (
+              <>
+                <div style={{display:"flex", alignItems:"flex-start", gap:"10px",
+                  marginBottom:"12px"}}>
+                  <div style={{
+                    border:`2px solid ${stop.color}`,
+                    padding:"6px 8px", fontSize:"0.6rem",
+                    color:stop.color, fontWeight:500, letterSpacing:"0.12em",
+                    textTransform:"uppercase", flexShrink:0, lineHeight:1.3
+                  }}>
+                    DÍA<br/>{stop.days}
+                  </div>
+                  <div>
+                    <div style={{
+                      fontFamily:"'DM Serif Display',serif",
+                      fontSize:"1.05rem", color:C.ink, lineHeight:1.2
+                    }}>{stop.label}</div>
+                    <div style={{fontSize:"0.65rem", color:stop.color,
+                      letterSpacing:"0.12em", marginTop:"2px", fontWeight:500}}>
+                      {stop.tag}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tabs */}
+                <div style={{display:"flex", marginBottom:"12px",
+                  borderBottom:`1px solid ${C.ink5}`}}>
+                  {TAB_META.map(t => (
+                    <button key={t.key} onClick={() => setTab(t.key)}
+                      style={{
+                        flex:1, padding:"6px 2px",
+                        fontSize:"0.62rem", letterSpacing:"0.06em",
+                        background:"none", border:"none",
+                        borderBottom: tab===t.key ? `2px solid ${stop.color}` : "2px solid transparent",
+                        color: tab===t.key ? stop.color : C.ink4,
+                        cursor:"pointer", fontWeight: tab===t.key ? 700 : 400,
+                        marginBottom:"-1px", transition:"all 0.15s",
+                        fontFamily:"'DM Mono',monospace"
+                      }}>
+                      {t.label}
+                    </button>
+                  ))}
+                </div>
+
+                <p style={{
+                  fontSize:"0.76rem", color:C.ink3,
+                  lineHeight:1.8, margin:0, minHeight:"100px"
+                }}>
+                  {stop[tab]}
+                </p>
+
+                <div style={{display:"flex", gap:"8px", marginTop:"14px"}}>
+                  <button onClick={() => { setSel(Math.max(0,sel-1)); setTab("arch"); }}
+                    disabled={sel===0}
+                    style={{
+                      flex:1, padding:"7px",
+                      background:sel>0?C.paper:"#eee",
+                      border:`1px solid ${C.ink5}`,
+                      color:sel>0?C.ink3:C.ink5,
+                      cursor:sel>0?"pointer":"default",
+                      fontSize:"0.7rem", letterSpacing:"0.1em",
+                      fontFamily:"'DM Mono',monospace"
+                    }}>← PREV</button>
+                  <button onClick={() => { setSel(Math.min(STOPS.length-2,sel+1)); setTab("arch"); }}
+                    disabled={sel>=STOPS.length-2}
+                    style={{
+                      flex:1, padding:"7px",
+                      background:sel<STOPS.length-2?stop.color:"#ccc",
+                      border:"none", color:"#fff",
+                      cursor:sel<STOPS.length-2?"pointer":"default",
+                      fontSize:"0.7rem", fontWeight:700, letterSpacing:"0.1em",
+                      fontFamily:"'DM Mono',monospace"
+                    }}>NEXT →</button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Stop list */}
+          <div style={{
+            background:C.paper, border:`1px solid ${C.ink5}`,
+            padding:"12px", marginBottom:"12px",
+            boxShadow:`2px 2px 0 ${C.ink5}`
+          }}>
+            <div style={{fontSize:"0.56rem", color:C.ink4, letterSpacing:"0.3em",
+              marginBottom:"8px", textTransform:"uppercase"}}>Itinerario</div>
+            {STOPS.filter((_,i)=>i<12).map((s,i) => (
+              <div key={i} onClick={() => { setSel(sel===i?null:i); setTab("arch"); }}
+                style={{
+                  display:"flex", alignItems:"center", gap:"8px",
+                  padding:"5px 8px", marginBottom:"1px",
+                  background:sel===i?s.color+"18":C.bg,
+                  borderLeft:`3px solid ${sel===i?s.color:C.ink5}`,
+                  cursor:"pointer", transition:"all 0.12s"
+                }}>
+                <span style={{fontSize:"0.65rem", fontWeight:700,
+                  color:sel===i?s.color:C.ink4, minWidth:"26px",
+                  letterSpacing:"0.04em"}}>D{s.days}</span>
+                <span style={{fontSize:"0.68rem",
+                  color:sel===i?s.color:C.ink3, flex:1,
+                  overflow:"hidden", whiteSpace:"nowrap", textOverflow:"ellipsis"}}>
+                  {s.label}
+                </span>
+                <span style={{width:"6px", height:"6px",
+                  background:s.color, flexShrink:0, opacity:0.7}}/>
+              </div>
+            ))}
+          </div>
+
+          {/* Stats */}
+          <div style={{
+            background:C.paper, border:`1px solid ${C.ink5}`,
+            padding:"12px", display:"grid",
+            gridTemplateColumns:"1fr 1fr 1fr", gap:"0",
+            boxShadow:`2px 2px 0 ${C.ink5}`
+          }}>
+            {[["14","DÍAS"],["5","ESTADOS"],["~2000","KM"]].map(([v,l],i) => (
+              <div key={l} style={{
+                textAlign:"center", padding:"8px 4px",
+                borderRight:i<2?`1px solid ${C.ink5}`:"none"
+              }}>
+                <div style={{
+                  fontFamily:"'DM Serif Display',serif",
+                  fontSize:"1.6rem", color:C.ink, lineHeight:1
+                }}>{v}</div>
+                <div style={{fontSize:"0.55rem", color:C.ink4, letterSpacing:"0.2em", marginTop:"3px"}}>{l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={{marginTop:"14px", color:C.ink5, fontSize:"0.6rem",
+        letterSpacing:"0.25em", textAlign:"center"}}>
+        NYC · HV · ALB · BRK · NOR · BOS · NPT · NHV · PHL · LAN · D.C. · DWG · NYC
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+</script>
+</body>
+</html>
